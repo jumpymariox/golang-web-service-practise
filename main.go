@@ -6,9 +6,11 @@ import (
 )
 
 func main() {
-	mux := ws.CreateServerMux()
-	mux.HandleFunc("/hello", func(w http.ResponseWriter, req *http.Request) {
-		w.Write([]byte("hello"))
+	ws.CreateServerMux()
+
+	ws.Handle("/test", func(w http.ResponseWriter, req *http.Request) {
+		w.Write([]byte("test"))
 	})
+
 	ws.Listen("8080")
 }

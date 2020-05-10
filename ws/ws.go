@@ -1,6 +1,7 @@
 package ws
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -17,11 +18,16 @@ func CreateServerMux() *http.ServeMux {
 	return mux
 }
 
+// Handle mux
+func Handle(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+	mux.HandleFunc(pattern, handler)
+}
+
 // Listen port
 func Listen(port string) {
 	log.Fatal(http.ListenAndServe(":8080", mux))
 }
 
 func (s *ServerHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
-	res.Write([]byte(req.Method + req.URL.Path))
+	fmt.Println([]byte("method:" + req.Method + "," + req.URL.Path))
 }
