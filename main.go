@@ -1,24 +1,14 @@
 package main
 
 import (
-	"log"
+	"httpWeb/ws"
 	"net/http"
 )
 
-// The ServeHandler interface
-type ServeHandler struct{}
-
-func (s *ServeHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
-	res.Write([]byte("start"))
-}
-
 func main() {
-	mux := http.NewServeMux()
-	mux.Handle("/", &ServeHandler{})
-	mux.HandleFunc("/hello", sayHello)
-	log.Fatal(http.ListenAndServe(":8080", mux))
-}
-
-func sayHello(res http.ResponseWriter, req *http.Request) {
-	res.Write([]byte("hello"))
+	mux := ws.CreateServerMux()
+	mux.HandleFunc("/hello", func(w http.ResponseWriter, req *http.Request) {
+		w.Write([]byte("hello"))
+	})
+	ws.Listen("8080")
 }
