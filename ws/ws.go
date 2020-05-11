@@ -1,20 +1,15 @@
 package ws
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
 
-// ServerHandler is ready for http
-type ServerHandler struct{}
-
 var mux *http.ServeMux
 
 // CreateServerMux is used to new one server
-func CreateServerMux() *http.ServeMux {
+func CreateServer() *http.ServeMux {
 	mux = http.NewServeMux()
-	mux.Handle("/", &ServerHandler{})
 	return mux
 }
 
@@ -23,11 +18,28 @@ func Handle(pattern string, handler func(http.ResponseWriter, *http.Request)) {
 	mux.HandleFunc(pattern, handler)
 }
 
-// Listen port
-func Listen(port string) {
-	log.Fatal(http.ListenAndServe(":8080", mux))
+// Get request
+func Get(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+	mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "GET" {
+			return
+		}
+		handler(w, r)
+	})
 }
 
-func (s *ServerHandler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
-	fmt.Println([]byte("method:" + req.Method + "," + req.URL.Path))
+// Post request
+func Post(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+	mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			return
+		}
+		handler(w, r)
+	})
+}
+
+// Listen port
+func Listen(port string) {
+	server := &http.Server{Addr: ":" + port, Handler: mux}
+	log.Fatal(server.ListenAndServe())
 }

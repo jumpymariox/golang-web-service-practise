@@ -6,10 +6,18 @@ import (
 )
 
 func main() {
-	ws.CreateServerMux()
+	ws.CreateServer()
 
-	ws.Handle("/test", func(w http.ResponseWriter, req *http.Request) {
-		w.Write([]byte("test"))
+	ws.Handle("/", func(w http.ResponseWriter, req *http.Request) {
+		w.Write([]byte("index"))
+	})
+
+	// ws.Get("/apple", func(w http.ResponseWriter, r *http.Request) {
+	// 	w.Write([]byte("GET " + r.URL.Path))
+	// })
+
+	ws.Post("/apple", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("POST" + r.URL.Path))
 	})
 
 	ws.Listen("8080")
