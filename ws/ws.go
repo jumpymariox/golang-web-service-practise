@@ -5,22 +5,35 @@ import (
 	"net/http"
 )
 
+// WebServer is core
+type WebServer struct {
+	mux *http.ServeMux
+}
+
 var mux *http.ServeMux
 
-// CreateServerMux is used to new one server
-func CreateServer() *http.ServeMux {
-	mux = http.NewServeMux()
-	return mux
+// New instance
+func New() *WebServer {
+	return &WebServer{}
+}
+
+// CreateServer is used to new one server
+func (ws *WebServer) CreateServer() {
+	ws.mux = http.NewServeMux()
 }
 
 // Handle mux
-func Handle(pattern string, handler func(http.ResponseWriter, *http.Request)) {
-	mux.HandleFunc(pattern, handler)
+func (ws *WebServer) Handle(pattern string, handler func(http.ResponseWriter, *http.Request)) bool {
+	if ws.mux == nil {
+		return false
+	}
+	ws.mux.HandleFunc(pattern, handler)
+	return true
 }
 
 // Get request
-func Get(pattern string, handler func(http.ResponseWriter, *http.Request)) {
-	mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+func (ws *WebServer) Get(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+	ws.mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			return
 		}
@@ -29,8 +42,8 @@ func Get(pattern string, handler func(http.ResponseWriter, *http.Request)) {
 }
 
 // Post request
-func Post(pattern string, handler func(http.ResponseWriter, *http.Request)) {
-	mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
+func (ws *WebServer) Post(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+	ws.mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			return
 		}
@@ -39,7 +52,7 @@ func Post(pattern string, handler func(http.ResponseWriter, *http.Request)) {
 }
 
 // Listen port
-func Listen(port string) {
-	server := &http.Server{Addr: ":" + port, Handler: mux}
+func (ws *WebServer) Listen(port string) {
+	server := &http.Server{Addr: ":" + port, Handler: ws.mux}
 	log.Fatal(server.ListenAndServe())
 }
