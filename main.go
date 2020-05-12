@@ -13,7 +13,7 @@ func main() {
 	})
 
 	w.Post("/apple", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("POST" + r.URL.Path))
+		w.Write([]byte("POST " + r.URL.Path))
 	})
 
 	w.Listen("8080")
